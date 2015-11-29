@@ -1,5 +1,6 @@
 from flask import Flask, jsonify
 import datetime
+import time
 import atexit
 import RPi.GPIO as GPIO
 app = Flask(__name__)
@@ -68,6 +69,28 @@ def toggle():
         print "Exception!"
         
     return jsonify(result=result, led=GPIO.input(LED), pin=LED)
+
+# This route will toogle some cool functions :)
+@app.route('/api/led/blink')
+@app.route('/api/led/blink/<float:speed>/')
+@app.route('/api/led/blink/<float:speed>/<int:numTimes>')
+def blink(speed=0.1, numTimes=50):
+    
+    try:
+        for i in range(0, numTimes):
+            print "Iteration " + str(i+1)
+            GPIO.output(LED, True) ## Turn on GPIO pin LED
+            time.sleep(speed) ## Wait for sleep seconds
+            GPIO.output(LED, False) ## Turn off GPIO pin LED
+            time.sleep(speed) ## Wait for sleep seconds
+        print " Done "
+    except:
+        ## do some logging...
+        now = datetime.datetime.now()
+        GPIO.cleanup()
+        print "Exception!"
+        
+    return jsonify(result="Blinking", led=GPIO.input(LED), pin=LED)
 
 @app.errorhandler(Exception)
 def catch_all_exception_handler(error):
