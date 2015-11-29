@@ -16,8 +16,40 @@ def index():
     now = datetime.datetime.now()
     return jsonify(result='Hello World !')
 
+# This route will turn on a LED
+@app.route('/api/led/on')
+def led_on():
+    try:
+        if ( GPIO.input(LED) == GPIO.LOW ):
+            print "Turn LED 'ON' at PIN: '"+ str(LED) +"' !"
+            GPIO.output(LED, True) ## Turn on GPIO pin LED, if it's off
+        else:
+            print "LED is already 'ON' at PIN: '"+ str(LED) +"' !"
+    except:
+        ## do some logging...
+        GPIO.cleanup()
+        print "Unexpected error: ", sys.exc_info()[0]
+        
+    return jsonify(led='on', pin=LED)
+
+# This route will turn on a LED
+@app.route('/api/led/off')
+def led_off():
+    try:
+        if ( GPIO.input(LED) == GPIO.HIGH ):
+            print "Turn LED 'OFF' at PIN: '"+ str(LED) +"' !"
+            GPIO.output(LED, False) ## Turn off GPIO pin LED, if it's on
+        else:
+            print "LED is already 'OFF' at PIN: '"+ str(LED) +"' !"
+    except:
+        ## do some logging...
+        GPIO.cleanup()
+        print "Unexpected error: ", sys.exc_info()[0]
+        
+    return jsonify(led='off', pin=LED)
+
 # This route will toogle some cool functions :)
-@app.route('/toggle')
+@app.route('/api/led/toggle')
 def toggle():
     result = 'Hello Toggle !'
     try:
@@ -35,7 +67,7 @@ def toggle():
         GPIO.cleanup()
         print "Exception!"
         
-    return jsonify(result=result)
+    return jsonify(result=result, led=GPIO.input(LED), pin=LED)
 
 @app.errorhandler(Exception)
 def catch_all_exception_handler(error):
