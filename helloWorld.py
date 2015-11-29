@@ -6,6 +6,11 @@ app = Flask(__name__)
 def index():
     return jsonify(result='Hello World !')
 
+# This route will toogle some cool functions :)
+@app.route('/toggle')
+def toggle():
+    return jsonify(result='Toggle !')
+
 if __name__ == '__main__':
     app.debug = True
     app.run()
